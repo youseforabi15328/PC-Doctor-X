@@ -10,7 +10,7 @@ try:
 except ImportError:
     sys.exit("pip install psutil")
 
-APP, VER = "PC Doctor X", "2.0"
+APP, VER = "PC Doctor X", "2.1"
 IS_WIN = sys.platform == "win32"
 NOWIN = 0x08000000 if IS_WIN else 0
 DATA = os.path.join(os.environ.get("APPDATA") or os.path.join(os.path.expanduser("~"), ".config"), "PCDoctorX", "reports")
@@ -864,14 +864,14 @@ def last_report(kind):
 # ---------------------------------------------------------------- صفحة التقرير
 ST = {"ok": ("سليم", "#16a34a"), "warn": ("تحذير", "#d97706"), "bad": ("مشكلة", "#dc2626"), "na": ("غير متاح", "#64748b")}
 KT = {"scan": "تقرير فحص شامل", "bench": "نتائج اختبار الأداء", "stress": "نتائج اختبار الإجهاد"}
-RCSS = """body{font-family:Segoe UI,Tahoma,Arial,sans-serif;background:#f1f5f9;color:#0f172a;margin:0;line-height:1.8}
+RCSS = """body{font-family:Segoe UI,Tahoma,Arial,sans-serif;background:#f8f3fd;color:#1a0f2e;margin:0;line-height:1.8;border-top:6px solid;border-image:linear-gradient(90deg,#7c3aed,#e11d74 40%,#ff7a1a 72%,#ffd23f) 1}
 .w{max-width:860px;margin:auto;padding:24px}h1{margin:0}.sub{color:#64748b}
 .score{display:flex;align-items:center;gap:20px;background:#fff;border-radius:16px;padding:20px;margin:18px 0}
 .big{font-size:3rem;font-weight:800}.card{background:#fff;border-radius:14px;padding:16px 20px;margin-bottom:14px;break-inside:avoid}
 h3{margin:0 0 8px}h3 em{font-style:normal;color:#fff;font-size:.75rem;padding:2px 10px;border-radius:10px;margin-inline-start:8px}
 table{width:100%;border-collapse:collapse;font-size:.92rem}td{padding:5px 8px;border-bottom:1px solid #e2e8f0;vertical-align:top}td:first-child{color:#64748b;width:34%}
 ul{padding-inline-start:20px;margin:8px 0 0}li.bad b{color:#dc2626}li.warn b{color:#d97706}li span{color:#475569;font-size:.9rem}
-button{font:inherit;padding:8px 18px;border:0;border-radius:10px;background:#0891b2;color:#fff;cursor:pointer}
+button{font:inherit;padding:8px 18px;border:0;border-radius:10px;background:linear-gradient(135deg,#6d28d9,#c81e6b);color:#fff;cursor:pointer}
 @media print{body{background:#fff}button{display:none}}"""
 
 def svg_chart(series):
@@ -882,8 +882,8 @@ def svg_chart(series):
         return f'<polyline fill="none" stroke="{col}" stroke-width="2" points="' + " ".join(
             f"{40 + i / max(len(series) - 1, 1) * 540:.0f},{150 - min(v, mx) / mx * 130:.0f}" for i, v in pts) + '"/>'
     return ('<svg viewBox="0 0 600 165" style="width:100%;background:#f8fafc;border-radius:8px">'
-            + line("cpu", 100, "#0891b2") + line("temp", 110, "#dc2626")
-            + '<text x="44" y="14" font-size="11" fill="#0891b2">المعالج %</text><text x="130" y="14" font-size="11" fill="#dc2626">الحرارة °C</text></svg>')
+            + line("cpu", 100, "#6d28d9") + line("temp", 110, "#dc2626")
+            + '<text x="44" y="14" font-size="11" fill="#6d28d9">المعالج %</text><text x="130" y="14" font-size="11" fill="#dc2626">الحرارة °C</text></svg>')
 
 def rhtml(r):
     e = html.escape
@@ -912,7 +912,7 @@ def rhtml(r):
         summ = f'<section class="card"><h3>✅ التوصيات بالأولوية</h3><ul>{rl}</ul></section>'
     adm = "" if r.get("admin") else '<p class="sub">ملاحظة: تم الفحص بدون صلاحيات المسؤول، وبعض القراءات (الحرارة، حالة الأقراص) تكون أدق عند التشغيل كمسؤول.</p>'
     return f'''<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>{KT.get(kind, "تقرير")} — {e(r["date"])}</title><style>{RCSS}</style></head><body><div class="w">
-<h1>🩺 {KT.get(kind, "تقرير")}</h1><p class="sub">{e(r["host"])} — {e(r["date"])} — PC Doctor X {e(r.get("version", ""))}</p>{head}{adm}{summ}{mods}
+<h1>{KT.get(kind, "تقرير")}</h1><p class="sub">{e(r["host"])} — {e(r["date"])} — PC Doctor X {e(r.get("version", ""))}</p>{head}{adm}{summ}{mods}
 <p><button onclick="print()">🖨️ طباعة / حفظ PDF</button></p></div></body></html>'''
 
 # ---------------------------------------------------------------- الخادم
@@ -1121,8 +1121,19 @@ canvas{width:100%;height:70px;margin-top:6px}.btn{font:inherit;background:linear
 table{width:100%;border-collapse:collapse;font-size:.92rem}th,td{padding:7px 8px;text-align:start;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:600;font-size:.82rem}
 .sc{font-size:2.8rem;font-weight:800}.f{padding:5px 0;font-size:.92rem}.f.bad b{color:var(--bad)}.f.warn b{color:var(--warn)}.f span{color:var(--muted)}
 input,select{font:inherit;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 10px}[hidden]{display:none!important}
+/* thermal identity */
+:root:root{--bg:#0d0618;--card:#170b2a;--text:#f6f1ff;--muted:#b9acd6;--line:#2c1b49;--acc:#ff8a3d;--acc2:#c4a1ff;--ok:#3de0c1;--warn:#ffc247;--bad:#ff5c7a;--thermal:linear-gradient(90deg,#7c3aed,#e11d74 40%,#ff7a1a 72%,#ffd23f)}
+:root:root[data-t=light]{--bg:#f8f3fd;--card:#fff;--text:#1a0f2e;--muted:#5f527d;--line:#e3d9f3;--acc:#c2410c;--acc2:#6d28d9;--ok:#0b8f78;--warn:#b45309;--bad:#c81e4a}
+body{font-family:'Segoe UI Variable Text','Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg)}
+.logo{display:flex;align-items:center;gap:9px}.logo b{color:var(--acc)}
+aside{background:var(--card)}aside button.on{background:linear-gradient(135deg,#6d28d9,#c81e6b);color:#fff}
+.btn{background:linear-gradient(135deg,#6d28d9,#c81e6b);color:#fff;box-shadow:0 8px 24px -12px rgba(225,29,116,.8)}
+.btn.s{background:var(--line);color:var(--text);box-shadow:none}
+.bar i{background:var(--thermal)}.c{border-radius:16px}
+.v,.sc,td:last-child{font-family:'Cascadia Mono',Consolas,monospace}
+a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--acc2);outline-offset:2px}
 </style></head><body>
-<aside><div class="logo">🩺 PC Doctor <b>X</b></div>
+<aside><div class="logo"><svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6d28d9"/><stop offset=".55" stop-color="#e11d74"/><stop offset="1" stop-color="#ff7a1a"/></linearGradient></defs><rect width="100" height="100" rx="24" fill="url(#lg)"/><polyline points="12,44 32,44 41,22 54,62 63,36 69,44 88,44" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><text x="50" y="88" text-anchor="middle" font-family="Arial" font-weight="800" font-size="28" fill="#fff">X</text></svg><span>PC Doctor <b>X</b></span></div>
 <button data-p="dash" class="on">📊 المراقبة والتسجيل</button><button data-p="scan">🔍 الفحص الشامل</button><button data-p="test">⚡ الأداء والإجهاد</button>
 <button data-p="crash">💥 تحليل الأعطال</button><button data-p="procs">⚙️ العمليات</button><button data-p="tools">🛠️ الصيانة والجدولة</button><button data-p="hist">🗂️ التقارير والتوقعات</button>
 <button class="sp" id="th">🌓 الوضع الفاتح/الغامق</button><button id="quit">⏻ إغلاق البرنامج</button></aside>
@@ -1134,7 +1145,7 @@ input,select{font:inherit;background:var(--bg);color:var(--text);border:1px soli
 <div class="c"><small>القرص الرئيسي</small><div class="v" id="vdisk">--</div><div class="bar"><i id="bdisk"></i></div></div>
 <div class="c"><small>الشبكة</small><div>⬇ <b id="vdown">--</b></div><div>⬆ <b id="vup">--</b></div></div></div>
 <h3>📈 التسجيل المستمر (CPU / RAM / الحرارة)</h3><div class="c"><button class="btn" id="rbtn">⏺ ابدأ التسجيل</button> <span class="m" id="rst">متوقف — يسجّل كل 5 ثوانٍ ويحفظ ملف CSV</span>
-<canvas id="crec" width="900" height="120"></canvas><small>الأزرق: المعالج · الفاتح: الذاكرة · الأحمر: الحرارة</small><div id="rlogs" style="margin-top:8px"></div></div></section>
+<canvas id="crec" width="900" height="120"></canvas><small>البرتقالي: المعالج · البنفسجي: الذاكرة · الوردي: الحرارة</small><div id="rlogs" style="margin-top:8px"></div></div></section>
 
 <section class="pg" id="scan" hidden><h2>فحص شامل للجهاز</h2><p class="m" style="margin-bottom:12px">يفحص 11 جزءاً (بما فيها تحليل الأعطال) ويحفظ تقريراً ونصائح ترقية. يستغرق حوالي دقيقة إلى دقيقتين.</p>
 <button class="btn jb" id="sbtn">▶ ابدأ الفحص</button><div class="bar"><i id="spb"></i></div><div id="ssteps"></div><div id="sres"></div></section>
@@ -1173,14 +1184,14 @@ $('#th').onclick=()=>{const d=document.documentElement,l=d.dataset.t==='light';l
 try{if(localStorage.t==='light')document.documentElement.dataset.t='light'}catch(e){}
 function multi(cv,arr){const c=cv.getContext('2d'),w=cv.width,h=cv.height;c.clearRect(0,0,w,h);arr.forEach(s=>{if(s.a.length<2)return;c.strokeStyle=s.c;c.lineWidth=2;c.beginPath();let st=false;s.a.forEach((v,i)=>{if(v==null||v==='')return;const x=i/(Math.max(s.a.length-1,29))*w,y=h-3-Math.min(v,s.mx)/s.mx*(h-6);st?c.lineTo(x,y):c.moveTo(x,y);st=true});c.stroke()})}
 const sp=n=>n>1048576?(n/1048576).toFixed(1)+' MB/s':(n/1024).toFixed(0)+' KB/s',Hs={cpu:[],ram:[]};
-async function tick(){try{const d=await api('/api/live');for(const k of['cpu','ram']){Hs[k].push(d[k]);if(Hs[k].length>60)Hs[k].shift();$('#v'+k).textContent=d[k].toFixed(0)+'%';multi($('#c'+k),[{a:Hs[k],c:k=='cpu'?'#22d3ee':'#60a5fa',mx:100}])}
+async function tick(){try{const d=await api('/api/live');for(const k of['cpu','ram']){Hs[k].push(d[k]);if(Hs[k].length>60)Hs[k].shift();$('#v'+k).textContent=d[k].toFixed(0)+'%';multi($('#c'+k),[{a:Hs[k],c:k=='cpu'?'#ff8a3d':'#c4a1ff',mx:100}])}
  $('#vdisk').textContent=d.disk.toFixed(0)+'%';$('#bdisk').style.width=d.disk+'%';$('#vdown').textContent=sp(d.down);$('#vup').textContent=sp(d.up)}catch(e){}}
 setInterval(tick,2000);tick();setInterval(()=>api('/api/ping'),4000);api('/api/ping');
 api('/api/info').then(i=>{if(i.win&&!i.admin)$('#admtip').hidden=false});
 $('#quit').onclick=()=>{post('/api/quit').finally(()=>{document.body.innerHTML='<p style="padding:40px">تم إغلاق البرنامج، يمكنك إغلاق هذه النافذة.</p>';window.close()})};
 /* التسجيل */
 async function recTick(){if(page!=='dash')return;const d=await api('/api/rec/data');$('#rbtn').textContent=d.on?'⏹ إيقاف التسجيل':'⏺ ابدأ التسجيل';$('#rst').textContent=d.on?`يسجّل الآن (${d.pts.length} قراءة) → ${d.file}`:'متوقف — يسجّل كل 5 ثوانٍ ويحفظ ملف CSV';
- multi($('#crec'),[{a:d.pts.map(p=>p[1]),c:'#22d3ee',mx:100},{a:d.pts.map(p=>p[2]),c:'#93c5fd',mx:100},{a:d.pts.map(p=>p[3]),c:'#f87171',mx:110}])}
+ multi($('#crec'),[{a:d.pts.map(p=>p[1]),c:'#ff8a3d',mx:100},{a:d.pts.map(p=>p[2]),c:'#c4a1ff',mx:100},{a:d.pts.map(p=>p[3]),c:'#ff5c7a',mx:110}])}
 setInterval(recTick,3000);
 $('#rbtn').onclick=async()=>{const d=await api('/api/rec/data');await post(d.on?'/api/rec/stop':'/api/rec/start');setTimeout(()=>{recTick();loadLogs()},400)};
 async function loadLogs(){const l=await api('/api/rec/list');$('#rlogs').innerHTML=l.length?'ملفات التسجيل: '+l.map(f=>`<a class="btn s" href="/api/rec/csv?f=${f}&t=${T}">${f.slice(4,12)} ${f.slice(13,19)} ⬇CSV</a>`).join(' '):''}
@@ -1191,7 +1202,7 @@ async function job(kind,params,p){busy(true);const r=await post('/api/job/start'
 async function poll(p){const s=await api('/api/job/status');$('#'+p+'pb').style.width=s.pct+'%';
  let h=s.done.map(d=>`<div class="step"><span class="d ${d.status}"></span><span>${esc(d.title)} — ${ST[d.status]}</span></div>`).join('');
  if(s.running&&s.step)h+=`<div class="step"><span class="d run"></span><span>جاري: ${esc(s.step)}…</span></div>`;if(s.msg)h+=`<div class="f">${esc(s.msg)}</div>`;$('#'+p+'steps').innerHTML=h;
- if(s.kind==='stress'&&s.series.length)multi($('#tcv'),[{a:s.series.map(x=>x.cpu),c:'#22d3ee',mx:100},{a:s.series.map(x=>x.temp),c:'#f87171',mx:110}]);
+ if(s.kind==='stress'&&s.series.length)multi($('#tcv'),[{a:s.series.map(x=>x.cpu),c:'#ff8a3d',mx:100},{a:s.series.map(x=>x.temp),c:'#ff5c7a',mx:110}]);
  if(s.running){setTimeout(()=>poll(p),800);return}busy(false);if(s.report_id)showRes(s.report_id,p);if(s.du)showDu(s.du)}
 $('#sbtn').onclick=()=>job('scan',{}, 's');$('#bbtn').onclick=()=>job('bench',{}, 't');
 $('#xbtn').onclick=()=>{if(confirm('سيعمل المعالج بأقصى حمل. تأكد أن التهوية جيدة. متابعة؟'))job('stress',{secs:+$('#ssec').value},'t')};$('#xstop').onclick=()=>post('/api/job/stop');
@@ -1223,7 +1234,7 @@ async function loadSched(){const s=await api('/api/sched');if(!s.supported){$('#
 async function setSched(en){const r=await post('/api/sched/set',{enabled:en,day:$('#sday').value,time:$('#stime').value});$('#sres2').innerHTML=`<div class="f ${r.ok?'':'bad'}">${esc(r.msg)}</div>`;loadSched()}
 /* التقارير */
 let sel=[];
-async function loadHist(){const l=await api('/api/reports');sel=[];multi($('#ctrend'),[{a:l.filter(x=>x.kind==='scan').map(x=>x.score).reverse(),c:'#4ade80',mx:100}]);
+async function loadHist(){const l=await api('/api/reports');sel=[];multi($('#ctrend'),[{a:l.filter(x=>x.kind==='scan').map(x=>x.score).reverse(),c:'#3de0c1',mx:100}]);
  $('#hl').innerHTML=l.length?'<table><tr><th></th><th>النوع</th><th>التاريخ</th><th>الصحة</th><th>مشاكل / تحذيرات</th><th></th></tr>'+l.map(x=>`<tr><td><input type="checkbox" onchange="pick('${x.id}',this)"></td><td>${KT[x.kind]||x.kind}</td><td>${esc(x.date)}</td><td style="color:${x.score==null?'inherit':col(x.score)};font-weight:700">${x.score==null?'—':x.score}</td><td>${x.bad} / ${x.warn}</td><td><button class="btn s" onclick="openR('${x.id}')">فتح</button> <button class="btn s" onclick="pdf('${x.id}')">PDF</button> <a class="btn s" href="/api/reports/${x.id}?dl=1&t=${T}">JSON</a> <button class="btn s" onclick="del('${x.id}')">حذف</button></td></tr>`).join('')+'</table><p style="margin-top:8px"><button class="btn s" id="cmpb" onclick="doCmp()">⚖️ قارن التقريرين المحدّدين</button></p>':'<p class="m">لا توجد تقارير بعد. ابدأ بفحص شامل.</p>';
  const p=await api('/api/predict');$('#pred').innerHTML=!p.ok?esc(p.msg):(p.items.length?p.items.map(i=>`<div class="f">• ${esc(i.name)}: ${i.days==null?'مستقر، لا خطر قريب':'متوقع أن يمتلئ/ينتهي بعد <b>'+i.days+' يوم</b>'} <span>(معدل ${i.rate} ${i.unit}${i.free_gb!=null?'، متبقي '+i.free_gb+' GB':''})</span></div>`).join(''):'لا بيانات كافية')}
 function pick(id,el){el.checked?sel.push(id):sel=sel.filter(x=>x!==id);if(sel.length>2){alert('اختر تقريرين فقط');el.checked=false;sel=sel.filter(x=>x!==id)}}
